@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-navigation',
   imports: [],
   templateUrl: './navigation.component.html',
-  styleUrl: './navigation.component.css'
+  styleUrls: './navigation.component.css'
 })
 export class NavigationComponent {
 
