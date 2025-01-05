@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
-import { NavigationComponent } from './navigation/navigation.component';
+import { NavigationModule } from './navigation/navigation.module'; // Importa il modulo del componente
 
 @NgModule({
   declarations: [
@@ -13,7 +13,7 @@ import { NavigationComponent } from './navigation/navigation.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-	NavigationComponent
+    NavigationModule
   ],
   providers: [],
   bootstrap: [AppComponent]
