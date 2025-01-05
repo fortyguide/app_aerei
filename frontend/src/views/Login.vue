@@ -8,7 +8,7 @@
       </div>
       <div>
         <label for="password">Password:</label>
-        <input type="password" v-model="password" required />
+        <input type="password" v-model="password" required autocomplete="current-password"/>
       </div>
       <button type="submit">Login</button>
     </form>

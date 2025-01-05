@@ -4,6 +4,7 @@ const session = require('express-session');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors')
 const sequelize = require('./config/index');
 const authRoutes = require('./routes/authRoute');
 const ticketRoutes = require('./routes/ticketRoute');
@@ -13,6 +14,12 @@ const app = express();
 
 // Middleware di sicurezza (Helmet)
 app.use(helmet());
+
+// Configurazione CORS
+app.use(cors({
+    origin: 'http://localhost:8080', // Permetti le richieste dal frontend
+    credentials: true // Permetti l'invio di credenziali come cookie
+}))
 
 // Configurazione sessioni
 app.use(session({

@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import authService from '../services/authService'; // Assicurati che il percorso sia corretto
+import authService from '../services/authService';
 
 export default createStore({
   state: {
