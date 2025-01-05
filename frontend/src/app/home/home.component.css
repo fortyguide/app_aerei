@@ -1,0 +1,59 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+}
+
+.logo {
+  height: 50px;
+}
+
+.nav-menu a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.main-section {
+  text-align: center;
+  padding: 50px 20px;
+  background-image: url('assets/airplane.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+.main-section h1 {
+  font-size: 3em;
+  color: #fff;
+}
+
+.main-section p {
+  font-size: 1.5em;
+  color: #fff;
+}
+
+.secondary-section {
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+footer {
+  padding: 10px 20px;
+  background-color: #333;
+  color: white;
+  text-align: center;
+}
+
+.footer-nav a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.social-media a img {
+  height: 30px;
+  margin: 0 5px;
+}
