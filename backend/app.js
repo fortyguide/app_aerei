@@ -17,7 +17,7 @@ app.use(helmet());
 
 // Configurazione CORS
 app.use(cors({
-    origin: 'https://localhost:8080', // Permetti le richieste dal frontend
+    origin: '*', // Permetti le richieste da qualsiasi origine
     credentials: true // Permetti l'invio di credenziali come cookie
 }))
 
