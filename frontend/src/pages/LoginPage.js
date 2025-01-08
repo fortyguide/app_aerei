@@ -1,11 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import authService from '../services/authService';
 import './LoginPage.css';
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('rememberMeEmail');
+    const savedPassword = localStorage.getItem('rememberMePassword');
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   const validateEmail = (email) => {
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,7 +35,14 @@ function LoginPage({ onLogin }) {
     }
     try {
       const response = await authService.login(email, password);
-      onLogin(response.token); 
+      onLogin(response.token);
+      if (rememberMe) {
+        localStorage.setItem('rememberMeEmail', email);
+        localStorage.setItem('rememberMePassword', password);
+      } else {
+        localStorage.removeItem('rememberMeEmail');
+        localStorage.removeItem('rememberMePassword');
+      }
       window.location.href = '/';
     } catch (error) {
       if (error.response && error.response.status === 400) {
@@ -56,6 +74,16 @@ function LoginPage({ onLogin }) {
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+        </div>
+        <div>
+          <label>
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+            />
+            Ricordami
+          </label>
         </div>
         <button type="submit">Login</button>
       </form>
