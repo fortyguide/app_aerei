@@ -1,7 +1,12 @@
 import React from 'react';
 
 function HomePage() {
-  return <h1>Home Page</h1>;
+  return (
+    <div>
+      <h2>Benvenuto nell'Applicazione Aerei</h2>
+      <p>Trova voli, acquista biglietti e visualizza il tuo storico. Una volta effettuato l'accesso, potrai anche gestire il tuo profilo e monitorare le tue prenotazioni.</p>
+    </div>
+  );
 }
 
 export default HomePage;

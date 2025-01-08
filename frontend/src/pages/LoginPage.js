@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
 
-function LoginPage() {
+function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -9,7 +9,8 @@ function LoginPage() {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      await authService.login(email, password);
+      const response = await authService.login(email, password);
+      onLogin(response.token); 
       window.location.href = '/';
     } catch (error) {
       setMessage('Accesso non riuscito. Controlla le tue credenziali.');
@@ -19,7 +20,7 @@ function LoginPage() {
   return (
     <div>
       <h1>Login Page</h1>
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleLogin}> {}
         <div>
           <label>Email:</label>
           <input
