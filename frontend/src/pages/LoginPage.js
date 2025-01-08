@@ -1,26 +1,44 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
+import './LoginPage.css';
 
 function LoginPage({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
+  const validateEmail = (email) => {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).toLowerCase());
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (!validateEmail(email)) {
+      setMessage('Inserisci un indirizzo email valido.');
+      return;
+    }
+    if (password.trim() === '') {
+      setMessage('La password non può essere vuota.');
+      return;
+    }
     try {
       const response = await authService.login(email, password);
       onLogin(response.token); 
       window.location.href = '/';
     } catch (error) {
-      setMessage('Accesso non riuscito. Controlla le tue credenziali.');
+      if (error.response && error.response.status === 400) {
+        setMessage('Email o password non corretti.');
+      } else {
+        setMessage('Errore durante il login. Riprova più tardi.');
+      }
     }
   };
 
   return (
     <div>
       <h1>Login Page</h1>
-      <form onSubmit={handleLogin}> {}
+      <form onSubmit={handleLogin}>
         <div>
           <label>Email:</label>
           <input
@@ -41,7 +59,7 @@ function LoginPage({ onLogin }) {
         </div>
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className="error-message">{message}</p>}
     </div>
   );
 }
