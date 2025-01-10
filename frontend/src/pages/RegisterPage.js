@@ -1,6 +1,6 @@
-// filepath: /c:/Users/39346/Desktop/Universita/Cybersecurity/app_aerei/frontend/src/pages/RegisterPage.js
 import React, { useState } from 'react';
 import authService from '../services/authService';
+import './RegisterPage.css';
 
 function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -20,12 +20,13 @@ function RegisterPage() {
   };
 
   return (
-    <div>
-      <h1>Register Page</h1>
-      <form onSubmit={handleRegister}>
+    <div className="register-container">
+      <form className="register-form" onSubmit={handleRegister}>
+        <h1>Registrati</h1>
         <div>
-          <label>Email:</label>
+          <label htmlFor="email">Email:</label>
           <input
+            id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -33,16 +34,19 @@ function RegisterPage() {
           />
         </div>
         <div>
-          <label>Password:</label>
+          <label htmlFor="password">Password:</label>
           <input
+            id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
-          <div>
-          <label>Nome:</label>
+        </div>
+        <div>
+          <label htmlFor="name">Nome:</label>
           <input
+            id="name"
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -50,18 +54,18 @@ function RegisterPage() {
           />
         </div>
         <div>
-          <label>Cognome:</label>
+          <label htmlFor="surname">Cognome:</label>
           <input
+            id="surname"
             type="text"
             value={surname}
             onChange={(e) => setSurname(e.target.value)}
             required
           />
         </div>
-        </div>
-        <button type="submit">Register</button>
+        <button type="submit">Registrati</button>
+        {message && <p className="error-message">{message}</p>}
       </form>
-      {message && <p>{message}</p>}
     </div>
   );
 }

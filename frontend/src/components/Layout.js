@@ -21,11 +21,13 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
             ) : (
               <>
                 <li><Link to="/profile">Profilo</Link></li>
-                <li><button className="logout-btn" onClick={onLogout}>Logout</button></li> {}
               </>
             )}
           </ul>
         </nav>
+        {isAuthenticated && (
+          <button className="logout-btn show" onClick={onLogout}>Logout</button>
+        )}
       </header>
       <main className="main-content">
         {children}
