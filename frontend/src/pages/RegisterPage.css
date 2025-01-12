@@ -1,4 +1,4 @@
-.register-container {
+.login-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -6,7 +6,7 @@
     background-color: #f0f2f5;
   }
   
-  .register-form {
+  .login-form {
     background: white;
     padding: 2rem;
     border-radius: 8px;
@@ -15,19 +15,19 @@
     max-width: 400px;
   }
   
-  .register-form h1 {
+  .login-form h1 {
     margin-bottom: 1.5rem;
     font-size: 1.5rem;
     color: #333;
   }
   
-  .register-form label {
+  .login-form label {
     display: block;
     margin-bottom: 0.5rem;
     font-weight: bold;
   }
   
-  .register-form input {
+  .login-form input {
     width: calc(100% - 2rem);
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -35,7 +35,26 @@
     border-radius: 4px;
   }
   
-  .register-form button[type="submit"] {
+  .password-container {
+    position: relative;
+  }
+  
+  .toggle-password {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .toggle-password img {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .login-form button[type="submit"] {
     width: 100%;
     padding: 0.75rem;
     background-color: #007bff;
@@ -46,7 +65,7 @@
     font-size: 1rem;
   }
   
-  .register-form button[type="submit"]:hover {
+  .login-form button[type="submit"]:hover {
     background-color: #0056b3;
   }
   

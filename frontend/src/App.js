@@ -13,7 +13,6 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Controlla se l'utente è loggato
     setIsAuthenticated(localStorage.getItem('auth_token') !== null);
   }, []);
 
@@ -25,20 +24,20 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('auth_token');
     setIsAuthenticated(false);
-  }; 
+  };
 
   return (
     <Router>
-      <Layout isAuthenticated={isAuthenticated} onLogout={handleLogout}> {}
+      <Layout isAuthenticated={isAuthenticated} onLogout={handleLogout}>
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} /> {}
+          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/flights" element={<FlightsPage />} />
           <Route path="/tickets" element={<TicketsPage />} />
           <Route path="/history" element={<HistoryPage />} />
-          <Route path="/profile" element={<ProfilePage />} /> 
-          <Route path="*" element={<h2>Pagina non trovata</h2>} /> {/* Gestione errore 404 */}
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="*" element={<h2>Pagina non trovata</h2>} />
         </Routes>
       </Layout>
     </Router>

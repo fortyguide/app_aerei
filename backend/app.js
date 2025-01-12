@@ -44,8 +44,8 @@ app.get('/', (req, res) => {
 
 // Configurazione delle chiavi SSL per HTTPS
 const options = {
-    key: fs.readFileSync(path.join(__dirname, 'key.pem')),    // Leggi il file della chiave privata
-    cert: fs.readFileSync(path.join(__dirname, 'cert.pem'))   // Leggi il file del certificato
+    key: fs.readFileSync(path.join(__dirname, 'localhost.key')),    // Leggi il file della chiave privata
+    cert: fs.readFileSync(path.join(__dirname, 'localhost.crt'))   // Leggi il file del certificato
 };
 
 // Test della connessione al database

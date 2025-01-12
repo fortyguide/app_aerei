@@ -1,28 +1,59 @@
 import React, { useState } from 'react';
 import authService from '../services/authService';
-import './RegisterPage.css';
+import './LoginPage.css'; // Riutilizziamo lo stesso CSS della pagina di login
 
-function RegisterPage() {
+const RegisterPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [message, setMessage] = useState('');
 
+  const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
   const handleRegister = async (e) => {
     e.preventDefault();
+    setMessage('');
+
+    if (!validateEmail(email)) {
+      setMessage('Inserisci un indirizzo email valido.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage('La password deve contenere almeno 6 caratteri.');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setMessage('Le password non corrispondono.');
+      return;
+    }
+
+    if (!name.trim()) {
+      setMessage('Il nome è obbligatorio.');
+      return;
+    }
+
+    if (!surname.trim()) {
+      setMessage('Il cognome è obbligatorio.');
+      return;
+    }
+
     try {
       await authService.register(email, password, name, surname);
-      window.location.href = '/login';
+      setMessage('Registrazione avvenuta con successo. Ora puoi effettuare il login.');
     } catch (error) {
-      setMessage('Registrazione fallita. Riprova.');
+      const errorMsg = error.response?.data?.errors?.[0]?.msg || 'Errore durante la registrazione. Riprova più tardi.';
+      setMessage(errorMsg);
     }
   };
 
   return (
-    <div className="register-container">
-      <form className="register-form" onSubmit={handleRegister}>
-        <h1>Registrati</h1>
+    <div className="login-container">
+      <form className="login-form" onSubmit={handleRegister}>
+        <h1>Registrazione</h1>
         <div>
           <label htmlFor="email">Email:</label>
           <input
@@ -40,6 +71,16 @@ function RegisterPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label htmlFor="confirmPassword">Conferma Password:</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
         </div>
@@ -68,6 +109,6 @@ function RegisterPage() {
       </form>
     </div>
   );
-}
+};
 
 export default RegisterPage;

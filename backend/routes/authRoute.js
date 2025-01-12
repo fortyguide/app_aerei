@@ -1,26 +1,43 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const { check, validationResult } = require('express-validator');
+const User = require('../models/userModel'); // Assicurati che il percorso sia corretto
 const router = express.Router();
-const User = require('../models/userModel');
 
-// Rotta per la registrazione di un nuovo utente
-router.post('/register', async (req, res) => {
-    const { email, password, name, surname, role } = req.body;
+// Rotta di registrazione
+router.post('/register', [
+    check('email').isEmail().withMessage('Inserisci un indirizzo email valido.'),
+    check('password').isLength({ min: 6 }).withMessage('La password deve contenere almeno 6 caratteri.'),
+    check('name').notEmpty().withMessage('Il nome è obbligatorio.'),
+    check('surname').notEmpty().withMessage('Il cognome è obbligatorio.'),
+], async (req, res) => {
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { email, password, name, surname, role = 'user' } = req.body;
 
     try {
+        // Verifica se l'utente esiste già
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
-            return res.status(400).json({ message: 'Email già in uso.' });
+            return res.status(400).json({ errors: [{ msg: 'Email già in uso.' }] });
         }
 
+        // Crea l'utente con password criptata
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({ email, password: hashedPassword, name, surname, role });
 
         res.status(201).json({ message: 'Utente registrato con successo.', userId: newUser.id });
     } catch (error) {
-        res.status(500).json({ message: 'Errore nella registrazione dell\'utente.', error });
+        console.error('Errore interno:', error.message);
+        res.status(500).json({ errors: [{ msg: 'Errore interno del server. Riprova più tardi.' }] });
     }
 });
+
+module.exports = router;
 
 // Rotta per il login di un utente
 router.post('/login', async (req, res) => {

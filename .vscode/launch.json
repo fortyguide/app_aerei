@@ -1,17 +1,15 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-      {
-        "type": "chrome",
-        "request": "launch",
-        "name": "Debug React App",
-        "url": "https://localhost:8081",
-        "webRoot": "${workspaceFolder}/src",
-        "sourceMaps": true,
-        "sourceMapPathOverrides": {
-          "webpack:///*": "${webRoot}/*"
-        }
-      }
-    ]
-  }
-  
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Chrome against localhost",
+      "type": "chrome",
+      "request": "launch",
+      "url": "https://localhost:8081",  // URL del tuo server React
+      "webRoot": "${workspaceFolder}/src",  // Imposta la radice del progetto per il mapping delle sorgenti
+      "skipFiles": ["<node_internals>/**"],
+      "sourceMaps": true,  // Abilita il mapping delle sorgenti per il debugging
+      "disableNetworkCache": true  // Disabilita la cache di rete, utile per il debugging
+    }
+  ]
+}

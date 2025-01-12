@@ -2,8 +2,8 @@ import axios from 'axios';
 
 const API_URL = 'https://localhost:3000/api/auth/';
 
-const login = async (email, password, captchaToken) => {
-  const response = await axios.post(API_URL + 'login', { email, password, captchaToken });
+const login = async (email, password) => {
+  const response = await axios.post(API_URL + 'login', { email, password });
   if (response.data.token) {
     localStorage.setItem('user', JSON.stringify(response.data));
   }
