@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import authService from '../services/authService';
-import './LoginPage.css'; // Riutilizziamo lo stesso CSS della pagina di login
+import './RegisterPage.css';
+import eyeOpenIcon from '../assets/eye-open.png';
+import eyeClosedIcon from '../assets/eye-closed.png';
 
 const RegisterPage = () => {
   const [email, setEmail] = useState('');
@@ -9,8 +12,25 @@ const RegisterPage = () => {
   const [name, setName] = useState('');
   const [surname, setSurname] = useState('');
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [countdown, setCountdown] = useState(5);
+  const navigate = useNavigate();
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  useEffect(() => {
+    if (countdown === 0) {
+      navigate('/login');
+    }
+    if (countdown > 0 && message.includes('Registrazione avvenuta con successo')) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+        setMessage(`Registrazione avvenuta con successo. Reindirizzamento alla pagina di login in ${countdown - 1} secondi...`);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [countdown, message, navigate]);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -43,7 +63,8 @@ const RegisterPage = () => {
 
     try {
       await authService.register(email, password, name, surname);
-      setMessage('Registrazione avvenuta con successo. Ora puoi effettuare il login.');
+      setMessage(`Registrazione avvenuta con successo. Reindirizzamento alla pagina di login in ${countdown} secondi...`);
+      setCountdown(5);
     } catch (error) {
       const errorMsg = error.response?.data?.errors?.[0]?.msg || 'Errore durante la registrazione. Riprova più tardi.';
       setMessage(errorMsg);
@@ -64,25 +85,45 @@ const RegisterPage = () => {
             required
           />
         </div>
-        <div>
+        <div className="password-container">
           <label htmlFor="password">Password:</label>
           <input
             id="password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
+          <button
+            type="button"
+            className="toggle-password"
+            onClick={() => setShowPassword(!showPassword)}
+          >
+            <img
+              src={showPassword ? eyeOpenIcon : eyeClosedIcon}
+              alt={showPassword ? 'Nascondi password' : 'Mostra password'}
+            />
+          </button>
         </div>
-        <div>
+        <div className="password-container">
           <label htmlFor="confirmPassword">Conferma Password:</label>
           <input
             id="confirmPassword"
-            type="password"
+            type={showConfirmPassword ? 'text' : 'password'}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
           />
+          <button
+            type="button"
+            className="toggle-password"
+            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+          >
+            <img
+              src={showConfirmPassword ? eyeOpenIcon : eyeClosedIcon}
+              alt={showConfirmPassword ? 'Nascondi password' : 'Mostra password'}
+            />
+          </button>
         </div>
         <div>
           <label htmlFor="name">Nome:</label>
