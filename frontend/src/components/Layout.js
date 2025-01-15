@@ -11,8 +11,6 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
           <ul>
             <li><Link to="/">Home</Link></li>
             <li><Link to="/flights">Voli</Link></li>
-            <li><Link to="/tickets">Biglietti</Link></li>
-            <li><Link to="/history">Storico</Link></li>
             {!isAuthenticated ? (
               <>
                 <li><Link to="/login">Login</Link></li>
@@ -20,7 +18,9 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
               </>
             ) : (
               <>
+                <li><Link to="/tickets">Biglietti</Link></li>
                 <li><Link to="/profile">Profilo</Link></li>
+                <li><Link to="/history">Storico movimenti</Link></li>
               </>
             )}
           </ul>

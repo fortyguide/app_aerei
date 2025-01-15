@@ -111,8 +111,11 @@ router.get('/search', [
       }
 
       if (destination) {
-          searchCriteria.destination = destination;
+          searchCriteria.destination = {
+              [Op.like]: `${destination}%` // Cerca voli anche tramite match parziali
+          };
       }
+
 
       if (departureTime) {
           searchCriteria.departureTime = {
