@@ -1,8 +1,16 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import authService from '../services/authService';
 import './Layout.css';
 
 const Layout = ({ children, isAuthenticated, onLogout }) => {
+  const location = useLocation();
+
+  const handleLogout = async () => {
+    await authService.logout();
+    onLogout();
+  };
+
   return (
     <div className="layout">
       <header className="header">
@@ -25,8 +33,8 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
             )}
           </ul>
         </nav>
-        {isAuthenticated && (
-          <button className="logout-btn show" onClick={onLogout}>Logout</button>
+        {isAuthenticated && location.pathname !== '/flights' && (
+          <button className="logout-btn show" onClick={handleLogout}>Logout</button>
         )}
       </header>
       <main className="main-content">

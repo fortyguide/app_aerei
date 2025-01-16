@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import flightService from '../services/flightService';
+import ticketService from '../services/ticketService';
 import './FlightsPage.css';
 
 const FlightsPage = () => {
@@ -11,11 +12,20 @@ const FlightsPage = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [error, setError] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [ticketCounts, setTicketCounts] = useState({});
 
   useEffect(() => {
-    setIsAuthenticated(localStorage.getItem('auth_token') !== null);
+    // Verifica se il cookie di autenticazione è presente
+    setIsAuthenticated(checkAuthCookie());
     fetchFlights();
   }, [page]);
+
+  const checkAuthCookie = () => {
+    // Verifica se il cookie di autenticazione (es. "auth_token") esiste
+    const cookies = document.cookie.split(';');
+    const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
+    return authCookie ? true : false;
+  };
 
   const fetchFlights = async () => {
     setError('');
@@ -24,7 +34,6 @@ const FlightsPage = () => {
       if (destination) filters.destination = destination;
       if (departureTime) filters.departureTime = departureTime;
       if (availableSeats) filters.availableSeats = availableSeats;
-
       const response = await flightService.getFlights(filters, page);
       setFlights(response.flights);
       setTotalPages(response.totalPages);
@@ -38,6 +47,42 @@ const FlightsPage = () => {
     e.preventDefault();
     setPage(1);
     fetchFlights();
+  };
+
+  const handlePurchase = async (flightNumber, availableSeats) => {
+    try {
+      const token = getAuthTokenFromCookies();
+      const ticketCount = ticketCounts[flightNumber] || 1;
+      if (ticketCount > availableSeats) {
+        setError('Il numero di biglietti da acquistare supera il numero di posti disponibili.');
+        return;
+      }
+      for (let i = 0; i < ticketCount; i++) {
+        await ticketService.purchaseTicket(flightNumber, token);
+      }
+      alert('Acquisto completato con successo! Puoi trovare i tuoi biglietti nel tuo profilo.');
+      fetchFlights(); // Ricarica i voli per aggiornare lo stato
+    } catch (error) {
+      setError('Errore durante l\'acquisto del biglietto. Riprova più tardi.');
+    }
+  };
+
+  const getAuthTokenFromCookies = () => {
+    // Estrai il valore del token dal cookie
+    const cookies = document.cookie.split(';');
+    const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
+    if (authCookie) {
+      const token = authCookie.split('=')[1];
+      return token;
+    }
+    return null;
+  };
+
+  const handleTicketCountChange = (flightNumber, count) => {
+    setTicketCounts({
+      ...ticketCounts,
+      [flightNumber]: count,
+    });
   };
 
   return (
@@ -81,7 +126,8 @@ const FlightsPage = () => {
             <th>Destinazione</th>
             <th>Data di Partenza</th>
             <th>Data di Arrivo</th>
-            <th>Posti Disponibili</th>
+            {isAuthenticated && <th>Posti Disponibili</th>}
+            {isAuthenticated && <th>Numero di Biglietti da Acquistare</th>}
             <th>Acquisto Biglietto</th>
           </tr>
         </thead>
@@ -92,12 +138,26 @@ const FlightsPage = () => {
               <td>{flight.destination}</td>
               <td>{new Date(flight.departureTime).toLocaleString()}</td>
               <td>{new Date(flight.arrivalTime).toLocaleString()}</td>
-              <td>{flight.availableSeats}</td>
+              {isAuthenticated && <td>{flight.availableSeats}</td>}
+              {isAuthenticated && (
+                <td>
+                  <input
+                    type="number"
+                    min="1"
+                    value={ticketCounts[flight.flightNumber] || 1}
+                    onChange={(e) => handleTicketCountChange(flight.flightNumber, e.target.value)}
+                  />
+                </td>
+              )}
               <td>
                 {isAuthenticated ? (
-                  <button onClick={() => window.location.href = '/tickets'}>Premi per acquistare il biglietto</button>
+                  <button onClick={() => handlePurchase(flight.flightNumber, flight.availableSeats)}>
+                    Acquista
+                  </button>
                 ) : (
-                  <button onClick={() => window.location.href = '/login'}>Loggarsi per acquistare il biglietto</button>
+                  <button onClick={() => window.location.href = '/login'}>
+                    Loggarsi per acquistare il biglietto
+                  </button>
                 )}
               </td>
             </tr>
