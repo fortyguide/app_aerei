@@ -13,16 +13,22 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    setIsAuthenticated(localStorage.getItem('auth_token') !== null);
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    };
+
+    setIsAuthenticated(getCookie('auth_token') !== undefined);
   }, []);
 
   const handleLogin = (token) => {
-    localStorage.setItem('auth_token', token);
+    document.cookie = `auth_token=${token}; path=/; secure; samesite=strict`;
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token');
+    document.cookie = 'auth_token=; Max-Age=0; path=/; secure; samesite=strict';
     setIsAuthenticated(false);
   };
 

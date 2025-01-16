@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import authService from '../services/authService';
 import './LoginPage.css';
 import eyeOpenIcon from '../assets/eye-open.png';
@@ -7,32 +7,8 @@ import eyeClosedIcon from '../assets/eye-closed.png';
 const LoginPage = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [message, setMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    const savedCredentials = {
-      email: localStorage.getItem('rememberMeEmail'),
-      password: localStorage.getItem('rememberMePassword'),
-    };
-
-    if (savedCredentials.email && savedCredentials.password) {
-      setEmail(savedCredentials.email);
-      setPassword(savedCredentials.password);
-      setRememberMe(true);
-    }
-  }, []);
-
-  const handleRememberMe = () => {
-    if (rememberMe) {
-      localStorage.setItem('rememberMeEmail', email);
-      localStorage.setItem('rememberMePassword', password);
-    } else {
-      localStorage.removeItem('rememberMeEmail');
-      localStorage.removeItem('rememberMePassword');
-    }
-  };
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -53,7 +29,6 @@ const LoginPage = ({ onLogin }) => {
     try {
       const response = await authService.login(email, password);
       onLogin(response.token);
-      handleRememberMe();
       window.location.href = '/';
     } catch (error) {
       const errorMsg =
@@ -97,16 +72,6 @@ const LoginPage = ({ onLogin }) => {
               alt={showPassword ? 'Nascondi password' : 'Mostra password'}
             />
           </button>
-        </div>
-        <div>
-          <label>
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            Ricordami
-          </label>
         </div>
         <button type="submit">Login</button>
         {message && <p className="error-message">{message}</p>}

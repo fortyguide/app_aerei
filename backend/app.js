@@ -4,22 +4,39 @@ const session = require('express-session');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors')
+const cors = require('cors');
 const sequelize = require('./config/index');
 const authRoutes = require('./routes/authRoute');
 const ticketRoutes = require('./routes/ticketRoute');
 const flightRoutes = require('./routes/flightRoute');
-const historyRoutes = require('./routes/historyRoute')
+const historyRoutes = require('./routes/historyRoute');
 const app = express();
 
 // Middleware di sicurezza (Helmet)
 app.use(helmet());
 
 // Configurazione CORS
+const allowedOrigins = ['https://localhost:8081', 
+                        'https://localhost:8082',
+                        'https://localhost:8083', 
+                        'https://localhost:8084', 
+                        'https://localhost:8085', 
+                        'https://localhost:8086', 
+                        'https://localhost:8087', 
+                        'https://localhost:8088', 
+                        'https://localhost:8089', 
+                        'https://localhost:8090' ]; // Aggiungi altre porte se necessario 
 app.use(cors({
-    origin: '*', // Permetti le richieste da qualsiasi origine
+    origin: (origin, callback) => {
+        // Permetti richieste da origini consentite
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Non consentito da CORS'));
+        }
+    },
     credentials: true // Permetti l'invio di credenziali come cookie
-}))
+}));
 
 // Configurazione sessioni
 app.use(session({
@@ -28,8 +45,8 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         httpOnly: true,   // Impedisce l'accesso ai cookie da JavaScript
-        secure: true,     // Imposta secure a true solo su HTTPS
-        sameSite: 'strict' // Protezione contro attacchi CSRF
+        secure: false,     // Imposta secure a true solo su HTTPS
+        sameSite: 'lax' // Protezione contro attacchi CSRF
     }
 }));
 
