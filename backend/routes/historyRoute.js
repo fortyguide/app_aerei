@@ -17,7 +17,7 @@ router.get('/read', async (req, res) => {
             filters.operation = operation;
         }
         if (departureTime) {
-            filters.departureTime >= departureTime;
+            filters.departureTime >= { [Op.gte]: departureTime };  // Corretto il filtro per departureTime
         }
         if (destination) {
             filters.destination = {
@@ -28,6 +28,9 @@ router.get('/read', async (req, res) => {
         const history = await History.findAll({
             where: filters,
             attributes: ['ticketId', 'operation', 'flightNumber', 'departureTime', 'destination', 'timestamp'],
+            order: [
+                ['timestamp', 'DESC'],  // Aggiunge l'ordinamento decrescente per timestamp
+            ],
         });
 
         if (history.length === 0) {

@@ -18,7 +18,6 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
         <nav>
           <ul>
             <li><Link to="/">Home</Link></li>
-            <li><Link to="/flights">Voli</Link></li>
             {!isAuthenticated ? (
               <>
                 <li><Link to="/login">Login</Link></li>
@@ -26,14 +25,14 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
               </>
             ) : (
               <>
-                <li><Link to="/tickets">Biglietti</Link></li>
+                <li><Link to="/flights">Voli</Link></li>
                 <li><Link to="/profile">Profilo</Link></li>
-                <li><Link to="/history">Storico movimenti</Link></li>
+                <li><Link to="/history">Gestione biglietti acquistati</Link></li>
               </>
             )}
           </ul>
         </nav>
-        {isAuthenticated && location.pathname !== '/flights' && (
+        {isAuthenticated && location.pathname === '/' && (
           <button className="logout-btn show" onClick={handleLogout}>Logout</button>
         )}
       </header>

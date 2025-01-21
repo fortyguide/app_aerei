@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import ticketService from '../services/ticketService';
 import './HistoryPage.css';
 
 const HistoryPage = () => {
   const [history, setHistory] = useState([]);
   const [sortOrder, setSortOrder] = useState('asc');
   const [filters, setFilters] = useState({ operation: '', arrivalTime: '', destination: '' });
+  const [filteredHistory, setFilteredHistory] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,19 +33,15 @@ const HistoryPage = () => {
         withCredentials: true,
       });
       setHistory(response.data.history);
+      setFilteredHistory(response.data.history);  // inizializza la history filtrata con tutti gli elementi
     } catch (error) {
       console.error('Errore durante il recupero dello storico:', error);
     }
   };
 
-  const handleSort = () => {
-    const sortedHistory = [...history].sort((a, b) => {
-      const dateA = new Date(a.timestamp);
-      const dateB = new Date(b.timestamp);
-      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
-    });
-    setHistory(sortedHistory);
-    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  const handleSearch = (e) => {
+    e.preventDefault();
+    applyFilters();
   };
 
   const handleFilterChange = (e) => {
@@ -53,50 +49,58 @@ const HistoryPage = () => {
   };
 
   const applyFilters = () => {
-    const latestTickets = history.reduce((acc, item) => {
-      acc[item.ticketId] = item;
-      return acc;
-    }, {});
+    let filtered = history;
 
-    const filteredHistory = Object.values(latestTickets).filter(item => {
-      const matchesOperation = !filters.operation || item.operation === filters.operation;
-      const matchesArrivalTime = !filters.arrivalTime || new Date(item.timestamp) >= new Date(filters.arrivalTime);
-      const matchesDestination = !filters.destination || item.destination.toLowerCase().includes(filters.destination.toLowerCase());
-      return matchesOperation && matchesArrivalTime && matchesDestination;
-    });
+    if (filters.operation) {
+      filtered = filtered.filter(item => item.operation === filters.operation);
+    }
+    if (filters.arrivalTime) {
+      filtered = filtered.filter(item => new Date(item.timestamp) >= new Date(filters.arrivalTime));
+    }
+    if (filters.destination) {
+      filtered = filtered.filter(item => item.destination.toLowerCase().includes(filters.destination.toLowerCase()));
+    }
 
-    return filteredHistory;
+    setFilteredHistory(filtered);
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
+  const handleSort = () => {
+    const sortedHistory = [...filteredHistory].sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+    setFilteredHistory(sortedHistory);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
   };
 
   const handleCancel = async (ticketId) => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
     try {
-      await ticketService.cancelTicket(ticketId, token);
-      setHistory(prevHistory => prevHistory.map(item => 
-        item.ticketId === ticketId ? { ...item, operation: 'cancellazione', timestamp: new Date().toISOString() } : item
-      ));
+      await axios.post(`https://localhost:3000/api/ticket/cancel/${ticketId}`, {}, {
+        withCredentials: true,
+      });
+      alert('Biglietto cancellato con successo!');
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
+      fetchHistory(token); // Refresh della tabella
     } catch (error) {
       console.error('Errore durante la cancellazione del biglietto:', error);
+      alert('Errore durante la cancellazione del biglietto');
     }
   };
 
   const handleCheckIn = async (ticketId) => {
-    const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
     try {
-      await ticketService.checkInTicket(ticketId, token);
-      setHistory(prevHistory => prevHistory.map(item => 
-        item.ticketId === ticketId ? { ...item, operation: 'check-in', timestamp: new Date().toISOString() } : item
-      ));
+      await axios.post(`https://localhost:3000/api/ticket/checkin/${ticketId}`, {}, {
+        withCredentials: true,
+      });
+      alert('Check-in effettuato con successo!');
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
+      fetchHistory(token); // Refresh della tabella
     } catch (error) {
       console.error('Errore durante il check-in del biglietto:', error);
+      alert('Errore durante il check-in del biglietto');
     }
   };
-
-  const filteredHistory = applyFilters();
 
   return (
     <div className="history-page">
@@ -133,8 +137,8 @@ const HistoryPage = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredHistory.map(item => (
-            <tr key={item.ticketId}>
+          {filteredHistory.map((item, index) => (
+            <tr key={`${item.ticketId}-${index}`}>
               <td>{new Date(item.timestamp).toLocaleString()}</td>
               <td>{item.operation}</td>
               <td>{item.flightNumber}</td>
