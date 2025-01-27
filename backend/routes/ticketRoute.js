@@ -3,7 +3,7 @@ const { Op } = require('sequelize');
 const router = express.Router();
 const Ticket = require('../models/ticketModel');
 const Flight = require('../models/flightModel');
-const History = require('../models/historyModel')
+const History = require('../models/historyModel');
 const { checkRole } = require('../middlewares/authMiddleware');
 const { query, validationResult } = require('express-validator');
 
@@ -44,7 +44,7 @@ router.post('/purchase', async (req, res) => {
         flight.availableSeats -= 1;
         await flight.save();
 
-        // Registra l'operazione nello storico
+        // Registra l'operazione nello storico (solo se l'operazione è nuova)
         await History.create({
             userId: req.session.userId,
             operation: 'acquisto',
@@ -60,7 +60,6 @@ router.post('/purchase', async (req, res) => {
         res.status(500).json({ message: 'Errore durante l\'acquisto del biglietto.', error });
     }
 });
-
 
 // Rotta per la cancellazione di un biglietto
 router.post('/cancel/:ticketId', async (req, res) => {
@@ -87,6 +86,7 @@ router.post('/cancel/:ticketId', async (req, res) => {
         }
 
         ticket.status = 'cancelled';
+        ticket.timestamp = new Date(); // Aggiungi l'aggiornamento della colonna timestamp
         await ticket.save();
 
         // Ripristina i posti disponibili
@@ -96,16 +96,16 @@ router.post('/cancel/:ticketId', async (req, res) => {
         flight.availableSeats += 1;
         await flight.save();
 
-         // Registra l'operazione nello storico
-        await History.create({
-            userId: req.session.userId,
-            operation: 'cancellazione',
-            ticketId: ticket.id,
-            flightNumber: flight.flightNumber,
-            departureTime: flight.departureTime,
-            destination: flight.destination,
-            timestamp: new Date(),
+        // Aggiorna l'operazione nello storico
+        const historyRecord = await History.findOne({
+            where: { ticketId: ticket.id, userId: req.session.userId, operation: 'acquisto' }
         });
+
+        if (historyRecord) {
+            historyRecord.operation = 'cancellazione';
+            historyRecord.timestamp = new Date(); // Aggiorna anche il timestamp nello storico
+            await historyRecord.save();
+        }
 
         res.status(200).json({ message: 'Biglietto cancellato con successo.' });
     } catch (error) {
@@ -138,21 +138,19 @@ router.post('/checkin/:ticketId', async (req, res) => {
         }
 
         ticket.checkinDone = true;
+        ticket.timestamp = new Date(); // Aggiungi l'aggiornamento della colonna timestamp
         await ticket.save();
 
-        // Registra l'operazione nello storico
-        const flight = await Flight.findOne({
-            where: { flightNumber: ticket.flightNumber }
+        // Aggiorna l'operazione nello storico
+        const historyRecord = await History.findOne({
+            where: { ticketId: ticket.id, userId: req.session.userId, operation: 'acquisto' }
         });
-        await History.create({
-          userId: req.session.userId,
-          operation: 'check-in',
-          ticketId: ticket.id,
-          flightNumber: flight.flightNumber,
-          departureTime: flight.departureTime,
-          destination: flight.destination,
-          timestamp: new Date(),
-        });
+
+        if (historyRecord) {
+            historyRecord.operation = 'check-in';
+            historyRecord.timestamp = new Date(); // Aggiorna anche il timestamp nello storico
+            await historyRecord.save();
+        }
 
         res.status(200).json({ message: 'Check-in completato con successo.' });
     } catch (error) {
@@ -234,6 +232,5 @@ router.get(
         }
     }
 );
-
 
 module.exports = router;

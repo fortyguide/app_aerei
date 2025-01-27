@@ -8,6 +8,9 @@ const HistoryPage = () => {
   const [sortOrder, setSortOrder] = useState('asc');
   const [filters, setFilters] = useState({ operation: '', arrivalTime: '', destination: '' });
   const [filteredHistory, setFilteredHistory] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,18 +25,30 @@ const HistoryPage = () => {
     } else {
       fetchHistory(token);
     }
-  }, [navigate]);
+  }, [navigate, page, filters]);
 
   const fetchHistory = async (token) => {
     try {
       const response = await axios.get('https://localhost:3000/api/history/read', {
+        params: { 
+          page,
+          operation: filters.operation,
+          arrivalTime: filters.arrivalTime,
+          destination: filters.destination
+        },
         headers: {
           Authorization: `Bearer ${token}`,
         },
         withCredentials: true,
       });
       setHistory(response.data.history);
-      setFilteredHistory(response.data.history);  // inizializza la history filtrata con tutti gli elementi
+      setFilteredHistory(response.data.history);
+      setTotalPages(response.data.totalPages);
+      if (response.data.history.length === 0) {
+        setErrorMessage('Non ci sono biglietti che rispettano i filtri di ricerca! Riprovare.');
+      } else {
+        setErrorMessage('');
+      }
     } catch (error) {
       console.error('Errore durante il recupero dello storico:', error);
     }
@@ -41,6 +56,7 @@ const HistoryPage = () => {
 
   const handleSearch = (e) => {
     e.preventDefault();
+    setPage(1);
     applyFilters();
   };
 
@@ -62,6 +78,11 @@ const HistoryPage = () => {
     }
 
     setFilteredHistory(filtered);
+    if (filtered.length === 0) {
+      setErrorMessage('Non ci sono biglietti che rispettano i filtri di ricerca! Riprovare.');
+    } else {
+      setErrorMessage('');
+    }
   };
 
   const handleSort = () => {
@@ -81,7 +102,7 @@ const HistoryPage = () => {
       });
       alert('Biglietto cancellato con successo!');
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
-      fetchHistory(token); // Refresh della tabella
+      fetchHistory(token);
     } catch (error) {
       console.error('Errore durante la cancellazione del biglietto:', error);
       alert('Errore durante la cancellazione del biglietto');
@@ -95,7 +116,7 @@ const HistoryPage = () => {
       });
       alert('Check-in effettuato con successo!');
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
-      fetchHistory(token); // Refresh della tabella
+      fetchHistory(token);
     } catch (error) {
       console.error('Errore durante il check-in del biglietto:', error);
       alert('Errore durante il check-in del biglietto');
@@ -125,6 +146,7 @@ const HistoryPage = () => {
         </label>
         <button type="submit">Cerca</button>
       </form>
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
       <table className="history-table">
         <thead>
           <tr>
@@ -156,6 +178,21 @@ const HistoryPage = () => {
           ))}
         </tbody>
       </table>
+      <div className="pagination">
+        <button
+          onClick={() => setPage(page - 1)}
+          disabled={page === 1}
+        >
+          Precedente
+        </button>
+        <span>Pagina {page} di {totalPages}</span>
+        <button
+          onClick={() => setPage(page + 1)}
+          disabled={page === totalPages}
+        >
+          Successivo
+        </button>
+      </div>
     </div>
   );
 };
