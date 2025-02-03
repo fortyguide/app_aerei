@@ -73,7 +73,7 @@ router.get('/profile', async (req, res) => {
 
     try {
         const user = await User.findByPk(req.session.userId, {
-            attributes: ['email', 'name', 'surname', 'role'] // Visualizza i campi essenziali
+            attributes: ['email', 'name', 'surname', 'role']
         });
         if (!user) {
             return res.status(404).json({ message: 'Utente non trovato.' });
@@ -104,7 +104,7 @@ router.put('/profile/edit', async (req, res) => {
             if (existingEmail) {
                 return res.status(400).json({ message: 'Email già in uso.' });
             }
-            user.email = email; // Aggiorna l'email
+            user.email = email;
         }
 
         // Verifica la password attuale e aggiorna con la nuova password

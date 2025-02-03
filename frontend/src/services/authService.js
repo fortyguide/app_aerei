@@ -20,10 +20,22 @@ const logout = async () => {
   localStorage.removeItem('auth_token');
 };
 
+const getProfile = async () => {
+  const response = await axios.get(API_URL + 'profile', { withCredentials: true });
+  return response.data;
+};
+
+const updateProfile = async (profileData) => {
+  const response = await axios.put(API_URL + 'profile/edit', profileData, { withCredentials: true });
+  return response.data;
+};
+
 const authService = {
   login,
   register,
   logout,
+  getProfile,
+  updateProfile,
 };
 
 export default authService;
