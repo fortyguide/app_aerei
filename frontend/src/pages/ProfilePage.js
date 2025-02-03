@@ -36,7 +36,8 @@ const ProfilePage = () => {
       await authService.updateProfile(profile);
       setMessage('Profilo aggiornato con successo.');
     } catch (error) {
-      setMessage("Errore durante l'aggiornamento del profilo.");
+      const errorMsg = error.response?.data?.message || "Errore durante l'aggiornamento del profilo.";
+      setMessage(errorMsg);
     }
   };
 
