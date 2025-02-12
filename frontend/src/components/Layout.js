@@ -1,9 +1,8 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import authService from '../services/authService';
 import './Layout.css';
 
-const Layout = ({ children, isAuthenticated, onLogout }) => {
+const Layout = ({ children, isAuthenticated, isAdmin, onLogout }) => {
   const location = useLocation();
 
   const handleLogout = async () => {
@@ -28,6 +27,10 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
                 <li><Link to="/flights">Voli</Link></li>
                 <li><Link to="/profile">Profilo</Link></li>
                 <li><Link to="/history">Gestione biglietti acquistati</Link></li>
+                {isAdmin && (
+                  <li><Link to="/admin">Admin</Link></li>
+                )}
+
               </>
             )}
           </ul>
@@ -36,12 +39,7 @@ const Layout = ({ children, isAuthenticated, onLogout }) => {
           <button className="logout-btn show" onClick={handleLogout}>Logout</button>
         )}
       </header>
-      <main className="main-content">
-        {children}
-      </main>
-      <footer className="footer">
-        <p>&copy; 2023 Applicazione Aerei. Tutti i diritti riservati.</p>
-      </footer>
+      <main>{children}</main>
     </div>
   );
 };

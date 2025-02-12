@@ -103,7 +103,7 @@ router.get('/search', [
   const { flightNumber, destination, departureTime, availableSeats, page = 1, limit = 10 } = req.query;
 
   try {
-      // Costruisci un oggetto 'where' dinamico con i parametri di ricerca
+      
       let searchCriteria = {};
 
       if (flightNumber) {

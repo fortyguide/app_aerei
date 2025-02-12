@@ -8,9 +8,11 @@ import TicketsPage from './pages/TicketsPage';
 import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import Layout from './components/Layout';
+import authService from './services/authService';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const getCookie = (name) => {
@@ -19,22 +21,39 @@ function App() {
       if (parts.length === 2) return parts.pop().split(';').shift();
     };
 
-    setIsAuthenticated(getCookie('auth_token') !== undefined);
+    const token = getCookie('auth_token');
+    if (token) {
+      setIsAuthenticated(true);
+      fetchUserRole();
+    }
   }, []);
 
-  const handleLogin = (token) => {
+  const fetchUserRole = async () => {
+    try {
+      const profile = await authService.getProfile();
+      if (profile.user.role === 'admin') {
+        setIsAdmin(true);
+      }
+    } catch (error) {
+      console.error('Errore durante il recupero del profilo:', error);
+    }
+  };
+
+  const handleLogin = async (token) => {
     document.cookie = `auth_token=${token}; path=/; secure; samesite=strict`;
     setIsAuthenticated(true);
+    await fetchUserRole();
   };
 
   const handleLogout = () => {
     document.cookie = 'auth_token=; Max-Age=0; path=/; secure; samesite=strict';
     setIsAuthenticated(false);
+    setIsAdmin(false);
   };
 
   return (
     <Router>
-      <Layout isAuthenticated={isAuthenticated} onLogout={handleLogout}>
+      <Layout isAuthenticated={isAuthenticated} isAdmin={isAdmin} onLogout={handleLogout}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
