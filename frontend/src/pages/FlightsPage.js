@@ -15,13 +15,11 @@ const FlightsPage = () => {
   const [ticketCounts, setTicketCounts] = useState({});
 
   useEffect(() => {
-    // Verifica se il cookie di autenticazione è presente
     setIsAuthenticated(checkAuthCookie());
     fetchFlights();
   }, [page]);
 
   const checkAuthCookie = () => {
-    // Verifica se il cookie di autenticazione (es. "auth_token") esiste
     const cookies = document.cookie.split(';');
     const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
     return authCookie ? true : false;
@@ -61,14 +59,13 @@ const FlightsPage = () => {
         await ticketService.purchaseTicket(flightNumber, token);
       }
       alert('Acquisto completato con successo! Puoi trovare i tuoi biglietti nel tuo profilo.');
-      fetchFlights(); // Ricarica i voli per aggiornare lo stato
+      fetchFlights();
     } catch (error) {
       setError('Errore durante l\'acquisto del biglietto. Riprova più tardi.');
     }
   };
 
   const getAuthTokenFromCookies = () => {
-    // Estrai il valore del token dal cookie
     const cookies = document.cookie.split(';');
     const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
     if (authCookie) {

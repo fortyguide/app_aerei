@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import flightService from '../services/flightAdminService';
 import './AddFlightPage.css';
 
 const AddFlightPage = () => {
@@ -9,35 +10,40 @@ const AddFlightPage = () => {
   const [destination, setDestination] = useState('');
   const [availableSeats, setAvailableSeats] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (new Date(departureTime) >= new Date(arrivalTime)) {
+      setMessage('Errore: L\'orario di partenza deve essere precedente all\'orario di arrivo.');
+      return;
+    }
+
     try {
-      const token = getAuthTokenFromCookies();
-      const response = await axios.post('https://localhost:3000/api/flights', {
+      const response = await flightService.addFlight({
         flightNumber,
         departureTime,
         arrivalTime,
         destination,
         availableSeats,
-      }, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
       });
-      setMessage(response.data.message);
+      setMessage(response.message);
+      setTimeout(() => {
+        navigate('/');
+      }, 2000);
     } catch (error) {
-      setMessage('Errore durante la creazione del volo. Riprova più tardi.');
+      if (error.response && error.response.status === 409) {
+        setMessage('Errore: Il volo esiste già.');
+      } else {
+        setMessage('Errore durante la creazione del volo. Riprova più tardi.');
+      }
     }
   };
 
-  const getAuthTokenFromCookies = () => {
-    const cookies = document.cookie.split(';');
-    const authCookie = cookies.find(cookie => cookie.trim().startsWith('auth_token='));
-    if (authCookie) {
-      return authCookie.split('=')[1];
-    }
-    return null;
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    return now.toISOString().slice(0, 16);
   };
 
   return (
@@ -61,6 +67,7 @@ const AddFlightPage = () => {
             type="datetime-local"
             value={departureTime}
             onChange={(e) => setDepartureTime(e.target.value)}
+            min={getCurrentDateTime()}
             required
           />
         </div>
@@ -71,6 +78,7 @@ const AddFlightPage = () => {
             type="datetime-local"
             value={arrivalTime}
             onChange={(e) => setArrivalTime(e.target.value)}
+            min={getCurrentDateTime()}
             required
           />
         </div>

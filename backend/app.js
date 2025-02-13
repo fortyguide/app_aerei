@@ -25,17 +25,17 @@ const allowedOrigins = ['https://localhost:8081',
                         'https://localhost:8087', 
                         'https://localhost:8088', 
                         'https://localhost:8089', 
-                        'https://localhost:8090' ]; // Aggiungi altre porte se necessario 
+                        'https://localhost:8090' ];
 app.use(cors({
     origin: (origin, callback) => {
-        // Permetti richieste da origini consentite
+        // Permette richieste da origini consentite
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
             callback(new Error('Non consentito da CORS'));
         }
     },
-    credentials: true // Permetti l'invio di credenziali come cookie
+    credentials: true // Permette l'invio di credenziali come cookie
 }));
 
 // Configurazione sessioni
@@ -44,7 +44,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-        httpOnly: true,   // Impedisce l'accesso ai cookie da JavaScript
+        httpOnly: false,   // Impedisce l'accesso ai cookie da JavaScript
         secure: false,     // Imposta secure a true solo su HTTPS
         sameSite: 'lax' // Protezione contro attacchi CSRF
     }
@@ -61,8 +61,8 @@ app.get('/', (req, res) => {
 
 // Configurazione delle chiavi SSL per HTTPS
 const options = {
-    key: fs.readFileSync(path.join(__dirname, 'localhost.key')),    // Leggi il file della chiave privata
-    cert: fs.readFileSync(path.join(__dirname, 'localhost.crt'))   // Leggi il file del certificato
+    key: fs.readFileSync(path.join(__dirname, 'localhost.key')), 
+    cert: fs.readFileSync(path.join(__dirname, 'localhost.crt'))   
 };
 
 // Test della connessione al database

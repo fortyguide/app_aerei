@@ -9,6 +9,7 @@ import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import Layout from './components/Layout';
 import authService from './services/authService';
+import AddFlightPage from './pages/AddFlightPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -62,6 +63,7 @@ function App() {
           <Route path="/tickets" element={<TicketsPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/addFlight" element={<AddFlightPage />} />
           <Route path="*" element={<h2>Pagina non trovata</h2>} />
         </Routes>
       </Layout>

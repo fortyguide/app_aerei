@@ -24,13 +24,16 @@ const Layout = ({ children, isAuthenticated, isAdmin, onLogout }) => {
               </>
             ) : (
               <>
-                <li><Link to="/flights">Voli</Link></li>
-                <li><Link to="/profile">Profilo</Link></li>
-                <li><Link to="/history">Gestione biglietti acquistati</Link></li>
-                {isAdmin && (
-                  <li><Link to="/admin">Admin</Link></li>
+                {!isAdmin && (
+                  <>
+                    <li><Link to="/flights">Voli</Link></li>
+                    <li><Link to="/profile">Profilo</Link></li>
+                    <li><Link to="/history">Gestione biglietti acquistati</Link></li>
+                  </>
                 )}
-
+                {isAdmin && (
+                  <li><Link to="/addFlight">Creazione volo</Link></li>
+                )}
               </>
             )}
           </ul>
@@ -40,6 +43,9 @@ const Layout = ({ children, isAuthenticated, isAdmin, onLogout }) => {
         )}
       </header>
       <main>{children}</main>
+      <footer className="footer">
+        <p>&copy; 2025 Applicazione Aerei. Tutti i diritti riservati.</p>
+      </footer>
     </div>
   );
 };
