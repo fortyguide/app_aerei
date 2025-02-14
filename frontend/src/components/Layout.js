@@ -32,7 +32,10 @@ const Layout = ({ children, isAuthenticated, isAdmin, onLogout }) => {
                   </>
                 )}
                 {isAdmin && (
-                  <li><Link to="/addFlight">Creazione volo</Link></li>
+                  <>
+                    <li><Link to="/addFlight">Creazione volo</Link></li>
+                    <li><Link to="/managementFlight">Gestione voli</Link></li>
+                  </>
                 )}
               </>
             )}

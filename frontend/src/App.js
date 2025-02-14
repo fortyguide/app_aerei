@@ -10,6 +10,7 @@ import ProfilePage from './pages/ProfilePage';
 import Layout from './components/Layout';
 import authService from './services/authService';
 import AddFlightPage from './pages/AddFlightPage';
+import ManagementFlightPage from './pages/ManagementFlightPage';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -64,6 +65,7 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/addFlight" element={<AddFlightPage />} />
+          <Route path="/managementFlight" element={<ManagementFlightPage />} />
           <Route path="*" element={<h2>Pagina non trovata</h2>} />
         </Routes>
       </Layout>
