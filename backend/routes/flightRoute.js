@@ -17,17 +17,6 @@ router.post('/flights', checkRole('admin'), async (req, res) => {
     }
 });
   
-  // Rotta per leggere tutti i voli
-router.get('/flights', async (req, res) => {
-    try {
-      const flights = await Flight.findAll();
-      res.status(200).json({ flights });
-    } catch (error) {
-      res.status(500).json({ message: 'Errore durante il recupero dei voli.', error });
-    }
-});
-
-  
   // Rotta per leggere un volo specifico
 router.get('/flights/:flightNumber', async (req, res) => {
     const { flightNumber } = req.params;
@@ -152,6 +141,49 @@ router.get('/search', [
       });
   } catch (error) {
       res.status(500).json({ message: 'Errore durante la ricerca dei voli.', error });
+  }
+});
+
+// Rotta per leggere tutti i voli con paginazione e filtri
+router.get('/flights', async (req, res) => {
+  const { destination, departureTime, availableSeats, page = 1, limit = 10 } = req.query;
+
+  try {
+    let searchCriteria = {};
+
+    if (destination) {
+      searchCriteria.destination = {
+        [Op.like]: `${destination}%`
+      };
+    }
+
+    if (departureTime) {
+      searchCriteria.departureTime = {
+        [Op.gte]: new Date(departureTime)
+      };
+    }
+
+    if (availableSeats) {
+      searchCriteria.availableSeats = {
+        [Op.gte]: availableSeats
+      };
+    }
+
+    const offset = (page - 1) * limit;
+
+    const { count, rows: flights } = await Flight.findAndCountAll({
+      where: searchCriteria,
+      offset: offset,
+      limit: parseInt(limit),
+    });
+
+    res.status(200).json({
+      flights,
+      totalPages: Math.ceil(count / limit),
+      currentPage: parseInt(page),
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore durante la ricerca dei voli.', error });
   }
 });
 
