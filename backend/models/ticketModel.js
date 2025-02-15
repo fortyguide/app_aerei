@@ -18,16 +18,15 @@ const Ticket = sequelize.define('Ticket', {
   status: {
     type: DataTypes.STRING,
 	allowNull: false,
-    defaultValue: 'active'  // Stato predefinito all'acquisto del biglietto
+    defaultValue: 'active'
   },
   checkinDone: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
-    defaultValue: false  // Di default il check-in non è stato fatto
+    defaultValue: false
   }
 });
 
-// Relazione: un biglietto appartiene a un utente
 Ticket.belongsTo(User);
 
 module.exports = Ticket;

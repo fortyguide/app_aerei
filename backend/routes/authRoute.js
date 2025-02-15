@@ -20,7 +20,7 @@ router.post('/register', [
     const { email, password, name, surname, role = 'user' } = req.body;
 
     try {
-        // Verifica se l'utente esiste già
+        
         const existingUser = await User.findOne({ where: { email } });
         if (existingUser) {
             return res.status(400).json({ errors: [{ msg: 'Email già in uso.' }] });
@@ -114,7 +114,7 @@ router.put('/profile/edit', async (req, res) => {
                 return res.status(400).json({ message: 'La password attuale non è corretta.' });
             }
             const hashedPassword = await bcrypt.hash(newPassword, 10);
-            user.password = hashedPassword; // Aggiorna la password
+            user.password = hashedPassword;
         }
 
         // Aggiorna nome e cognome se forniti

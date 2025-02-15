@@ -17,22 +17,19 @@ router.post('/purchase', async (req, res) => {
     }
 
     try {
-        // Trova il volo corrispondente
+    
         const flight = await Flight.findOne({
             where: { flightNumber }
         });
 
-        // Verifica se il volo esiste
         if (!flight) {
             return res.status(404).json({ message: 'Volo non trovato.' });
         }
 
-        // Verifica se ci sono posti disponibili
         if (flight.availableSeats <= 0) {
             return res.status(400).json({ message: 'Non ci sono posti disponibili per questo volo.' });
         }
 
-        // Procedi con la creazione del biglietto
         const newTicket = await Ticket.create({
             flightNumber,
             destination: flight.destination,
@@ -40,11 +37,9 @@ router.post('/purchase', async (req, res) => {
             UserId: userId
         });
 
-        // Riduci il numero di posti disponibili
         flight.availableSeats -= 1;
         await flight.save();
 
-        // Registra l'operazione nello storico (solo se l'operazione è nuova)
         await History.create({
             userId: req.session.userId,
             operation: 'acquisto',
@@ -86,24 +81,22 @@ router.post('/cancel/:ticketId', async (req, res) => {
         }
 
         ticket.status = 'cancelled';
-        ticket.timestamp = new Date(); // Aggiungi l'aggiornamento della colonna timestamp
+        ticket.timestamp = new Date();
         await ticket.save();
 
-        // Ripristina i posti disponibili
         const flight = await Flight.findOne({
             where: { flightNumber: ticket.flightNumber }
         });
         flight.availableSeats += 1;
         await flight.save();
 
-        // Aggiorna l'operazione nello storico
         const historyRecord = await History.findOne({
             where: { ticketId: ticket.id, userId: req.session.userId, operation: 'acquisto' }
         });
 
         if (historyRecord) {
             historyRecord.operation = 'cancellazione';
-            historyRecord.timestamp = new Date(); // Aggiorna anche il timestamp nello storico
+            historyRecord.timestamp = new Date(); 
             await historyRecord.save();
         }
 
@@ -138,17 +131,16 @@ router.post('/checkin/:ticketId', async (req, res) => {
         }
 
         ticket.checkinDone = true;
-        ticket.timestamp = new Date(); // Aggiungi l'aggiornamento della colonna timestamp
+        ticket.timestamp = new Date(); 
         await ticket.save();
 
-        // Aggiorna l'operazione nello storico
         const historyRecord = await History.findOne({
             where: { ticketId: ticket.id, userId: req.session.userId, operation: 'acquisto' }
         });
 
         if (historyRecord) {
             historyRecord.operation = 'check-in';
-            historyRecord.timestamp = new Date(); // Aggiorna anche il timestamp nello storico
+            historyRecord.timestamp = new Date();
             await historyRecord.save();
         }
 
@@ -163,7 +155,6 @@ router.get(
     '/monitoring',
     checkRole('admin'),
     [
-        // Validazione dei parametri
         query('flightNumber')
             .optional()
             .isString()

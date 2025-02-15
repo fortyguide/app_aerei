@@ -28,7 +28,7 @@ const allowedOrigins = ['https://localhost:8081',
                         'https://localhost:8090' ];
 app.use(cors({
     origin: (origin, callback) => {
-        // Permette richieste da origini consentite
+        
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
@@ -40,7 +40,7 @@ app.use(cors({
 
 // Configurazione sessioni
 app.use(session({
-    secret: 'il_tuo_segreto_di_sessione',  // Cambia con un segreto sicuro
+    secret: 'il_tuo_segreto_di_sessione',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -50,7 +50,6 @@ app.use(session({
     }
 }));
 
-// Middleware per il parsing del body delle richieste
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -74,7 +73,7 @@ sequelize.authenticate()
         console.error('Errore di connessione al database:', err);
     });
 
-// Sincronizzazione dei modelli User e Ticket
+// Sincronizzazione dei modelli User, Ticket, History e Flight con il database
 const syncModels = async () => {
     try {
         await sequelize.sync();
@@ -86,7 +85,7 @@ const syncModels = async () => {
 
 syncModels();
 
-// Usare le rotte
+// Utilizzo delle rotte
 app.use('/api/auth', authRoutes);
 app.use('/api/ticket', ticketRoutes);
 app.use('/api/flight', flightRoutes);

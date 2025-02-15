@@ -19,7 +19,7 @@ const checkRole = (requiredRole) => {
                     return res.status(403).json({ message: 'Accesso negato. Non hai i permessi necessari.' });
                 }
 
-                // Se il ruolo è corretto, prosegui con la richiesta
+                // Se il ruolo è corretto, prosegue con la richiesta
                 next();
             })
             .catch(error => res.status(500).json({ message: 'Errore del server.', error }));
