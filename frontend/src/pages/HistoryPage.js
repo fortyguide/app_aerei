@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { fetchHistory, cancelTicket, checkInTicket } from '../services/historyService';
 import './HistoryPage.css';
 
 const HistoryPage = () => {
@@ -23,28 +23,17 @@ const HistoryPage = () => {
     if (!token) {
       navigate('/login');
     } else {
-      fetchHistory(token);
+      fetchHistoryData(token);
     }
   }, [navigate, page, filters]);
 
-  const fetchHistory = async (token) => {
+  const fetchHistoryData = async (token) => {
     try {
-      const response = await axios.get('https://localhost:3000/api/history/read', {
-        params: { 
-          page,
-          operation: filters.operation,
-          arrivalTime: filters.arrivalTime,
-          destination: filters.destination
-        },
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      });
-      setHistory(response.data.history);
-      setFilteredHistory(response.data.history);
-      setTotalPages(response.data.totalPages);
-      if (response.data.history.length === 0) {
+      const data = await fetchHistory(token, page, filters);
+      setHistory(data.history);
+      setFilteredHistory(data.history);
+      setTotalPages(data.totalPages);
+      if (data.history.length === 0) {
         setErrorMessage('Non ci sono biglietti che rispettano i filtri di ricerca! Riprovare.');
       } else {
         setErrorMessage('');
@@ -97,29 +86,21 @@ const HistoryPage = () => {
 
   const handleCancel = async (ticketId) => {
     try {
-      await axios.post(`https://localhost:3000/api/ticket/cancel/${ticketId}`, {}, {
-        withCredentials: true,
-      });
-      alert('Biglietto cancellato con successo!');
+      await cancelTicket(ticketId);
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
-      fetchHistory(token);
+      fetchHistoryData(token);
     } catch (error) {
       console.error('Errore durante la cancellazione del biglietto:', error);
-      alert('Errore durante la cancellazione del biglietto');
     }
   };
 
   const handleCheckIn = async (ticketId) => {
     try {
-      await axios.post(`https://localhost:3000/api/ticket/checkin/${ticketId}`, {}, {
-        withCredentials: true,
-      });
-      alert('Check-in effettuato con successo!');
+      await checkInTicket(ticketId);
       const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
-      fetchHistory(token);
+      fetchHistoryData(token);
     } catch (error) {
       console.error('Errore durante il check-in del biglietto:', error);
-      alert('Errore durante il check-in del biglietto');
     }
   };
 

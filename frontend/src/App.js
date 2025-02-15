@@ -4,7 +4,6 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import FlightsPage from './pages/FlightsPage';
-import TicketsPage from './pages/TicketsPage';
 import HistoryPage from './pages/HistoryPage';
 import ProfilePage from './pages/ProfilePage';
 import Layout from './components/Layout';
@@ -61,7 +60,6 @@ function App() {
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/flights" element={<FlightsPage />} />
-          <Route path="/tickets" element={<TicketsPage />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/addFlight" element={<AddFlightPage />} />
