@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Flight = require('../models/flightModel');
+const History = require('../models/historyModel');
 const { check, validationResult } = require('express-validator');
 const { checkRole } = require('../middlewares/authMiddleware');
 const { Op } = require('sequelize');
@@ -60,18 +61,25 @@ router.put('/flights/:id', checkRole('admin'), async (req, res) => {
 
 // Rotta per cancellare un volo (solo per admin)
 router.delete('/flights/:id', checkRole('admin'), async (req, res) => {
-    const { id } = req.params;
-  
-    try {
-      const flight = await Flight.findByPk(id);
-      if (!flight) {
-        return res.status(404).json({ message: 'Volo non trovato.' });
-      }
-      await flight.destroy();
-      res.status(200).json({ message: 'Volo cancellato con successo.' });
-    } catch (error) {
-      res.status(500).json({ message: 'Errore durante la cancellazione del volo.', error });
+  const { id } = req.params;
+
+  try {
+    const flight = await Flight.findByPk(id);
+    if (!flight) {
+      return res.status(404).json({ message: 'Volo non trovato.' });
     }
+
+    await History.update(
+      { flightStatus: 'cancellato' },
+      { where: { flightNumber: flight.flightNumber } }
+    );
+    
+    await flight.destroy();
+
+    res.status(200).json({ message: 'Volo cancellato con successo.' });
+  } catch (error) {
+    res.status(500).json({ message: 'Errore durante la cancellazione del volo.', error });
+  }
 });
 
 // Rotta di ricerca dei voli con validazione, paginazione e filtro

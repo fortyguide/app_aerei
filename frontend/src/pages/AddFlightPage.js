@@ -33,8 +33,8 @@ const AddFlightPage = () => {
         navigate('/');
       }, 2000);
     } catch (error) {
-      if (error.response && error.response.status === 409) {
-        setMessage('Errore: Il volo esiste già.');
+      if (error.response.status === 500) {
+        setMessage('Il volo esiste già.');
       } else {
         setMessage('Errore durante la creazione del volo. Riprova più tardi.');
       }
