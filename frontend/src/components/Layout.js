@@ -17,6 +17,7 @@ const Layout = ({ children, isAuthenticated, isAdmin, onLogout }) => {
         <nav>
           <ul>
             <li><Link to="/">Home</Link></li>
+            <li><Link to="/flights">Voli</Link></li>
             {!isAuthenticated ? (
               <>
                 <li><Link to="/login">Login</Link></li>
@@ -26,7 +27,6 @@ const Layout = ({ children, isAuthenticated, isAdmin, onLogout }) => {
               <>
                 {!isAdmin && (
                   <>
-                    <li><Link to="/flights">Voli</Link></li>
                     <li><Link to="/profile">Profilo</Link></li>
                     <li><Link to="/history">Gestione biglietti acquistati</Link></li>
                   </>

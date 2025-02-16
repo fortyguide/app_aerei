@@ -58,7 +58,7 @@ const FlightsPage = () => {
       for (let i = 0; i < ticketCount; i++) {
         await ticketService.purchaseTicket(flightNumber, token);
       }
-      alert('Acquisto completato con successo! Puoi trovare i tuoi biglietti nel tuo profilo.');
+      alert('Acquisto completato con successo! Puoi trovare i tuoi biglietti nella sezione "Gestione biglietti acquistati".');
       fetchFlights();
     } catch (error) {
       setError('Errore durante l\'acquisto del biglietto. Riprova più tardi.');
