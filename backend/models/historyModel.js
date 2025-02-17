@@ -36,6 +36,10 @@ const History = sequelize.define('History', {
     allowNull: false,
     defaultValue: 'attivo',
   },
+  seatNumber: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 });
 
 module.exports = History;

@@ -136,6 +136,7 @@ const HistoryPage = () => {
             <th>Numero Volo</th>
             <th>Destinazione</th>
             <th>Orario di Partenza</th>
+            <th>Numero di Posto</th>
             <th>Azioni</th>
           </tr>
         </thead>
@@ -147,16 +148,17 @@ const HistoryPage = () => {
               <td>{item.flightNumber}</td>
               <td>{item.destination}</td>
               <td>{new Date(item.departureTime).toLocaleString()}</td>
+              <td>{item.seatNumber}</td>
               <td>
-              {item.flightStatus === 'attivo' && item.operation === 'acquisto' && (
-                <>
-                  <button onClick={() => handleCancel(item.ticketId)}>Cancella biglietto</button>
-                  <button onClick={() => handleCheckIn(item.ticketId)}>Effettua il check-in</button>
-                </>
-              )}
-              {(item.flightStatus === 'cancellato' && (item.operation === 'acquisto' || item.operation === 'check-in')) && (
-                <p>Volo cancellato dall'admin, il biglietto verrà rimborsato al più presto, ci scusiamo per il disagio!</p>
-              )}
+                {item.flightStatus === 'attivo' && item.operation === 'acquisto' && (
+                  <>
+                    <button onClick={() => handleCancel(item.ticketId)}>Cancella biglietto</button>
+                    <button onClick={() => handleCheckIn(item.ticketId)}>Effettua il check-in</button>
+                  </>
+                )}
+                {(item.flightStatus === 'cancellato' && (item.operation === 'acquisto' || item.operation === 'check-in')) && (
+                  <p>Volo cancellato dall'admin, il biglietto verrà rimborsato al più presto, ci scusiamo per il disagio!</p>
+                )}
               </td>
             </tr>
           ))}

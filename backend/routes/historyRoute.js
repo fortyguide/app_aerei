@@ -30,7 +30,7 @@ router.get('/read', async (req, res) => {
 
         const { count, rows: history } = await History.findAndCountAll({
             where: filters,
-            attributes: ['ticketId', 'operation', 'flightNumber', 'departureTime', 'destination', 'timestamp', 'flightStatus'],
+            attributes: ['ticketId', 'operation', 'flightNumber', 'departureTime', 'destination', 'timestamp', 'flightStatus', 'seatNumber'],
             order: [['timestamp', 'DESC']],
             offset,
             limit: parseInt(limit),

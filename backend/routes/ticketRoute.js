@@ -141,6 +141,7 @@ router.post('/checkin/:ticketId', async (req, res) => {
         if (historyRecord) {
             historyRecord.operation = 'check-in';
             historyRecord.timestamp = new Date();
+            historyRecord.seatNumber = await History.count({ where: { flightNumber: ticket.flightNumber, operation: 'check-in' } }) + 1;
             await historyRecord.save();
         }
 
